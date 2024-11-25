@@ -90,7 +90,7 @@ def load_data():
         item_properties_train['categoryid'] = item_properties_train['categoryid'].astype(int)
         item_properties['categoryid'] = item_properties['categoryid'].astype(int)
         for col in item_properties_train.columns:
-            if col=='available':
+            if col=='available' or col=='categoryid':
                 continue
             if item_properties_train[col].apply(lambda x:x.startswith('n') and (len(x.split()))==1).all():
                 item_properties_train[col] = item_properties_train[col].apply(lambda x:x[1:]) # Remove 'n' 
@@ -170,11 +170,6 @@ def process_popularity(df, level):
     result = event_counts.merge(visitor_counts, on=level)
 
     return result
-
-
-
-
-
 
 
 
