@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 def load_data():
     try:
@@ -22,8 +23,8 @@ def load_data():
         events = events.drop(['transactionid'],axis=1)
         events=events.drop_duplicates()
         item_properties = item_properties.drop_duplicates()
-        events['timestamp']= pd.to_datetime(events['timestamp'],unit='ms')
-        item_properties['timestamp']= pd.to_datetime(item_properties['timestamp'],unit='ms')
+        events['timestamp']= events['timestamp'].apply(lambda x:datetime.fromtimestamp(x/1000))
+        item_properties['timestamp']= item_properties['timestamp'].apply(lambda x:datetime.fromtimestamp(x/1000))
 
         category_tree=category_tree.dropna()
         category_tree['categoryid'] = category_tree['categoryid'].astype(int)
