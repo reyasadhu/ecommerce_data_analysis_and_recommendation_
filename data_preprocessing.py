@@ -19,12 +19,28 @@ def load_data():
         item_properties = pd.concat([item_properties_1, item_properties_2], ignore_index=True)
         del item_properties_1, item_properties_2
         
-
         events = events.drop(['transactionid'],axis=1)
         events=events.drop_duplicates()
         item_properties = item_properties.drop_duplicates()
         events['timestamp']= events['timestamp'].apply(lambda x:datetime.fromtimestamp(x/1000))
         item_properties['timestamp']= item_properties['timestamp'].apply(lambda x:datetime.fromtimestamp(x/1000))
+
+        #Check if all the items has all 1104 properties in the training data
+        property_item_count = item_properties[item_properties['itemid'].isin(events['itemid'])]
+        property_item_count = pd.DataFrame(property_item_count.groupby(['property'])['itemid'].nunique().reset_index(name='unique_item_count'))
+        property_item_count = property_item_count.sort_values(by='unique_item_count', ascending=False).reset_index(drop=True)
+
+        #Only keep the properties that have value for atleast 150000 items
+        top_properties = property_item_count[property_item_count['unique_item_count']>150000]['property']
+        item_properties = item_properties[item_properties['property'].isin(top_properties)]
+
+        #Sample 10000 items
+        available_items = item_properties[(item_properties['property']=='available') & (item_properties['value']== '1')]['itemid'].unique()
+        np.random.seed(1)
+        sample_items = np.random.choice(list(available_items), size=10000, replace=False)
+
+        events = events[events['itemid'].isin(sample_items)]
+        item_properties = item_properties[item_properties['itemid'].isin(sample_items)]
 
         category_tree=category_tree.dropna()
         category_tree['categoryid'] = category_tree['categoryid'].astype(int)
@@ -37,7 +53,7 @@ def load_data():
         category_tree_df = merge_with_category_paths(category_tree_df, category_tree)
 
         #Splitting by time
-        cutoff_time = pd.to_datetime('2015-09-01')
+        cutoff_time = pd.to_datetime('2015-08-17')
         events_train = events[events['timestamp']<=cutoff_time]
         events_valid = events[events['timestamp']>cutoff_time]
 
@@ -48,16 +64,6 @@ def load_data():
         popularity_user = process_popularity(events_train, level = "visitorid")     
         popularity_item.to_csv("processed_data/popularity_item.csv", index=False)
         popularity_user.to_csv("processed_data/popularity_user.csv", index=False)
-
-        #Check if all the items has all 1104 properties in the training data
-        property_item_count = item_properties_train[item_properties_train['itemid'].isin(events_train['itemid'])]
-        property_item_count = pd.DataFrame(property_item_count.groupby(['property'])['itemid'].nunique().reset_index(name='unique_item_count'))
-        property_item_count = property_item_count.sort_values(by='unique_item_count', ascending=False).reset_index(drop=True)
-
-        #Only keep the properties that have value for atleast 150000 items
-        top_properties = property_item_count[property_item_count['unique_item_count']>150000]['property']
-        item_properties_train = item_properties_train[item_properties_train['property'].isin(top_properties)]
-        item_properties = item_properties[item_properties['property'].isin(top_properties)]
 
         #Make each property to a column
         item_properties_train = item_properties_train.pivot(index=['itemid','timestamp'], columns='property', values='value')
