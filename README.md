@@ -1,4 +1,32 @@
 # personalized_ecommerce_recommendation
 A retrieval based recommendation system
 
-Raw Data: The raw data can be downloaded from here https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset/data
+## Requirements
+
+The following libraries are required to run this project:
+
+- pandas
+- numpy
+- scipy
+- scikit-learn
+
+## Installation
+
+You can install the required libraries using the following command:
+
+```bash
+pip install -r requirements.txt
+```
+## Dataset
+
+The raw data can be downloaded from here https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset/data
+Save the data in a folder raw_data to run the code.
+
+## Usage
+
+To run the code, execute the following command in your terminal:
+
+```bash
+python main.py
+```
+
