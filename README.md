@@ -1,5 +1,5 @@
 # personalized_ecommerce_recommendation
-A retrieval based recommendation system
+Data analysis of e-commerce user-item interactions with a collaborative filtering recommender system implementation
 
 ## Requirements
 
