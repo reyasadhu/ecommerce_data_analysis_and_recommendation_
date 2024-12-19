@@ -1,4 +1,4 @@
-# personalized_ecommerce_recommendation
+# ecommerce_data_analysis_and_recommendation
 Data analysis of e-commerce user-item interactions with a collaborative filtering recommender system implementation
 
 ## Requirements
